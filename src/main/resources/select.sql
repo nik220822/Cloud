@@ -1,0 +1,1 @@
+select product_name from NickDB.ORDERS join NickDB.CUSTOMERS on NickDB.ORDERS.customer_id = NickDB.CUSTOMERS.id where NickDB.CUSTOMERS.name = :name;
