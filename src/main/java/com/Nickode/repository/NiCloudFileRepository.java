@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 @Repository
-public interface NiCloudRepository extends JpaRepository<File, String> {
+public interface NiCloudFileRepository extends JpaRepository<File, String> {
     Optional<File> findByFileName(String FileName);
     List<File> findByNameIsNotNull();
 }
