@@ -1,4 +1,4 @@
-insert into USERS (id, user, password)
+insert into USERS (id, username, password)
 values
-('abcdif123', 'userone', 123),
-('asdfgt456', 'usertwo', 000);
+('id1','userone', 123),
+('id2','usertwo', 000);

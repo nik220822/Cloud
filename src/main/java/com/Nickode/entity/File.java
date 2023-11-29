@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,6 +13,9 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "files")
 public class File {
+    @Autowired
+    public File(String authenticationGetName, String fileName, String type, long size, byte[] data) {
+    }
 
     @Id
     @GeneratedValue(generator = "NickIDgenerator")
@@ -26,14 +30,16 @@ public class File {
     private NiCloudUser user;
 
     @Column(name = "filename", nullable = false)
-    private String fileName;
+    private String filename;
+
+    @Column(name = "type")
+    private String type;
 
     @Column(name = "size", nullable = false)
     private Long size;
 
-    @Column(name = "type")
-    private String type;
     @Lob
     @Column(name = "data", nullable = false, columnDefinition = "BLOB")
     private byte[] data;
+
 }

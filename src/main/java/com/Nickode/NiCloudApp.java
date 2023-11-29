@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NiCloudServiceApp {
+public class NiCloudApp {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NiCloudServiceApp.class, args);
+		SpringApplication.run(NiCloudApp.class, args);
 	}
 
 }

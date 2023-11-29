@@ -3,7 +3,7 @@ services:
   frontend:
     image: node:18.18
     ports:
-      - 8080:8081
+      - 8080:8080
     working_dir: /working_dir
     environment:
       NODE_PATH: /working_dir/frontend/

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface NiCloudFileRepository extends JpaRepository<File, String> {
-    Optional<File> findByFileName(String FileName);
-    List<File> findByNameIsNotNull();
+    Optional<File> findByFilename(String FileName);
+    List<File> findByFilenameIsNotNull();
+    void deleteByFilename(String Filename);
 }

@@ -6,7 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
 
 @NoArgsConstructor
@@ -15,7 +18,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "users")
-public class NiCloudUser {
+public class NiCloudUser implements UserDetails {
     @Id
     @GeneratedValue(generator = "NickIDgenerator")
     @GenericGenerator(
@@ -32,4 +35,29 @@ public class NiCloudUser {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<File> files;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
