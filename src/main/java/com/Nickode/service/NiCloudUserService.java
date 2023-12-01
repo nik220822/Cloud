@@ -1,6 +1,7 @@
 package com.Nickode.service;
 
 import com.Nickode.entity.NiCloudUser;
+import com.Nickode.repository.NiCloudUserRepository;
 import com.Nickode.security.NiCloudJSONwebTokenManager;
 import com.Nickode.security.NiCloudAuthRequest;
 import com.Nickode.security.NiCloudAuthResponse;
@@ -16,24 +17,31 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NiCloudUserService {
+public class NiCloudUserService implements UserDetailsService {
     @Autowired
     private final NiCloudJSONwebTokenManager niCloudJSONwebTokenManager;
-    @Autowired
-    private final UserDetailsService userDetailsService;
     @Autowired
     private final AuthenticationManager authenticationManager;
     @Autowired
     private final HttpServletRequest httpServletRequest;
+    @Autowired
+    private final NiCloudUserRepository niCloudUserRepository;
 
     public NiCloudUserService(NiCloudJSONwebTokenManager niCloudJSONwebTokenManager,
-                              UserDetailsService userDetailsService,
                               AuthenticationManager authenticationManager,
-                              HttpServletRequest httpServletRequest) {
+                              HttpServletRequest httpServletRequest,
+                              NiCloudUserRepository niCloudUserRepository) {
         this.niCloudJSONwebTokenManager = niCloudJSONwebTokenManager;
-        this.userDetailsService = userDetailsService;
         this.authenticationManager = authenticationManager;
         this.httpServletRequest = httpServletRequest;
+        this.niCloudUserRepository = niCloudUserRepository;
+    }
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        NiCloudUser niCloudUser = niCloudUserRepository.findByUsername(username).orElseThrow(() -> {
+            return new UsernameNotFoundException(String.format("User '%s' not found", username));
+        });
+        return niCloudUser;
     }
 
     public NiCloudAuthResponse login(NiCloudAuthRequest authenticationRequest) {
@@ -41,7 +49,7 @@ public class NiCloudUserService {
             String username = authenticationRequest.getUsername();
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, authenticationRequest.getPassword()));
-            NiCloudUser niCloudUser = (NiCloudUser) userDetailsService.loadUserByUsername(username);
+            NiCloudUser niCloudUser = (NiCloudUser) loadUserByUsername(username);
 
             if (niCloudUser == null) {
                 throw new UsernameNotFoundException(username + "Failed to find");

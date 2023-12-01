@@ -1,6 +1,6 @@
 package com.Nickode.security;
 
-import com.Nickode.service.UserDetailsServiceImpl;
+import com.Nickode.service.NiCloudUserService;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +20,12 @@ import io.jsonwebtoken.*;
 @Component
 public class NiCloudJSONwebTokenManager {
     @Autowired
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final NiCloudUserService niCloudUserService;
     @Autowired
-    private static List<String> blackTokens = new ArrayList<>();
+    private List<String> blackTokens = new ArrayList<>();
 
-    public NiCloudJSONwebTokenManager(UserDetailsServiceImpl userDetailsServiceImpl, List<String> blackTokens) {
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
+    public NiCloudJSONwebTokenManager(NiCloudUserService niCloudUserService, List<String> blackTokens) {
+        this.niCloudUserService = niCloudUserService;
         this.blackTokens = blackTokens;
     }
 
@@ -53,7 +53,7 @@ public class NiCloudJSONwebTokenManager {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userDetailsServiceImpl.loadUserByUsername(getUsername(token));
+        UserDetails userDetails = this.niCloudUserService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
@@ -79,12 +79,12 @@ public class NiCloudJSONwebTokenManager {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public static void addBlackTokens(String token) {
-        blackTokens.add(token);
+    public void addBlackTokens(String token) {
+        this.blackTokens.add(token);
     }
 
-    public static List<String> getBlackTokens() {
-        return blackTokens;
+    public List<String> getBlackTokens() {
+        return this.blackTokens;
     }
 
 }

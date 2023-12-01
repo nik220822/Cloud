@@ -16,20 +16,20 @@ import java.io.IOException;
 @Component
 public class NiCloudOncePerRequestFilter extends OncePerRequestFilter {
     @Autowired
-    private final NiCloudJSONwebTokenManager jSONwebTokenManager;
+    private final NiCloudJSONwebTokenManager niCloudJSONwebTokenManager;
 
-    public NiCloudOncePerRequestFilter(NiCloudJSONwebTokenManager jSONwebTokenManager) {
-        this.jSONwebTokenManager = jSONwebTokenManager;
+    public NiCloudOncePerRequestFilter(NiCloudJSONwebTokenManager niCloudJSONwebTokenManager) {
+        this.niCloudJSONwebTokenManager = niCloudJSONwebTokenManager;
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String token = jSONwebTokenManager.resolveToken(request);
+        String token = niCloudJSONwebTokenManager.resolveToken(request);
 
-        if (token != null && jSONwebTokenManager.validateToken(token)) {
-            Authentication auth = jSONwebTokenManager.getAuthentication(token);
+        if (token != null && niCloudJSONwebTokenManager.validateToken(token)) {
+            Authentication auth = niCloudJSONwebTokenManager.getAuthentication(token);
 
             if (auth != null) {
                 SecurityContextHolder.getContext().setAuthentication(auth);

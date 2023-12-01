@@ -5,7 +5,7 @@ import com.Nickode.security.NiCloudJSONwebTokenManager;
 import com.Nickode.security.NiCloudAuthRequest;
 import com.Nickode.security.NiCloudAuthResponse;
 import com.Nickode.service.NiCloudFileService;
-import com.Nickode.service.UserDetailsServiceImpl;
+import com.Nickode.service.NiCloudUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +31,19 @@ public class NiCloudController {
     @Autowired
     private final AuthenticationManager authenticationManager;
     @Autowired
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final NiCloudUserService niCloudUserService;
     @Autowired
     private final NiCloudJSONwebTokenManager niCloudJSONwebTokenManager;
     @Autowired
     private final NiCloudFileService niCloudFileService;
 
-    public NiCloudController(AuthenticationManager authenticationManager, UserDetailsServiceImpl jwtUserDetailsService, UserDetailsServiceImpl userDetailsService, UserDetailsServiceImpl userDetailsServiceImpl, NiCloudJSONwebTokenManager niCloudJSONwebTokenManager, NiCloudFileService niCloudFileService) {
+    public NiCloudController(AuthenticationManager authenticationManager, NiCloudUserService niCloudUserService, NiCloudJSONwebTokenManager niCloudJSONwebTokenManager, NiCloudFileService niCloudFileService) {
         this.authenticationManager = authenticationManager;
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.niCloudUserService = niCloudUserService;
         this.niCloudJSONwebTokenManager = niCloudJSONwebTokenManager;
         this.niCloudFileService = niCloudFileService;
     }
+
     /**
      * authentication
      */
@@ -51,14 +52,15 @@ public class NiCloudController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     niCloudAuthRequest.getUsername(), niCloudAuthRequest.getPassword()));
-        } catch (BadCredentialsException e) {
+        } catch (BadCredentialsException badCredentialsException) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        final UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(niCloudAuthRequest.getUsername());
+        final UserDetails userDetails = niCloudUserService.loadUserByUsername(niCloudAuthRequest.getUsername());
         final NiCloudAuthResponse niCloudAuthResponse = new NiCloudAuthResponse();
         niCloudAuthResponse.setAuthToken(niCloudJSONwebTokenManager.generateToken(userDetails));
         return ResponseEntity.ok(niCloudAuthResponse);
     }
+
     @PutMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody HttpServletRequest httpServletRequest) {
         final String header = httpServletRequest.getHeader("auth-token");
@@ -69,13 +71,19 @@ public class NiCloudController {
         }
         return ResponseEntity.ok("Success logout");
     }
+
     /**
      * getList
      */
     @GetMapping("/list")
     public ResponseEntity<List<String>> getFileNames(Authentication authentication) {
-        return ResponseEntity.ok(niCloudFileService.getFileNames(authentication.getName()));
+        try {
+            return ResponseEntity.ok(niCloudFileService.getFileNames(authentication.getName()));
+        } catch (Exception exception) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
+
     /**
      * fileManagement
      */
@@ -85,22 +93,24 @@ public class NiCloudController {
             niCloudFileService.delete(fileName, authentication.getName());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(String.format("Deleted successfully: %s", fileName));
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(String.format("Failed to delete: %s", fileName));
         }
     }
+
     @DeleteMapping("/allfiles")
     public ResponseEntity<?> deleteAllFiles(Authentication authentication) {
         try {
             niCloudFileService.deleteAll(authentication.getName());
             return ResponseEntity.status(HttpStatus.OK)
                     .body(String.format("Deleted successfully."));
-        } catch (Exception e) {
+        } catch (Exception exception) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(String.format("Failed to delete."));
         }
     }
+
     @GetMapping("/file")
     public ResponseEntity<?> downloadFile(@RequestParam("file") String fileName, Authentication authentication) {
         Optional<File> optionalFile = niCloudFileService.findFile(fileName, authentication.getName());
@@ -114,6 +124,7 @@ public class NiCloudController {
                 .contentType(MediaType.valueOf(optionalFile.get().getType()))
                 .body(optionalFile.get().getData());
     }
+
     @PutMapping("/file")
     public ResponseEntity<?> editFileName(@RequestParam("filename") String fileName,
                                           @RequestBody String newFileName, Authentication authentication) {
@@ -126,6 +137,7 @@ public class NiCloudController {
                     .body(String.format("Failed to update: %s", fileName));
         }
     }
+
     @PostMapping("/file")
     public ResponseEntity<?> uploadFile(@RequestParam("filename") String filename,
                                         @RequestBody MultipartFile multipartFile, Authentication authentication) {
