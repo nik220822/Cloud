@@ -1,90 +1,61 @@
 package com.Nickode.security;
 
-import com.Nickode.service.NiCloudUserService;
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 
-import io.jsonwebtoken.*;
-
-@Component
+@Service
 public class NiCloudJSONwebTokenManager {
+    private static final List<String> blackTokens = new ArrayList<>();
+    private static final Duration duration = Duration.ofMinutes(60);
     @Autowired
-    private final NiCloudUserService niCloudUserService;
+    private final Algorithm auth0JwtAlgorithm;
     @Autowired
-    private List<String> blackTokens = new ArrayList<>();
+    private final JWTVerifier auth0JwtJWTVerifier;
 
-    public NiCloudJSONwebTokenManager(NiCloudUserService niCloudUserService, List<String> blackTokens) {
-        this.niCloudUserService = niCloudUserService;
-        this.blackTokens = blackTokens;
-    }
-
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
-
-    @PostConstruct
-    protected void init() {
-        jwtSecret = Base64.getEncoder().encodeToString(jwtSecret.getBytes());
+    public NiCloudJSONwebTokenManager(@Value("${jwt.secret}") final String jwtSecret) {
+        this.auth0JwtAlgorithm = Algorithm.HMAC384(jwtSecret);
+        this.auth0JwtJWTVerifier = JWT.require(this.auth0JwtAlgorithm).build();
     }
 
     public String generateToken(UserDetails userDetails) {
-        Claims claims = Jwts.claims().setSubject(userDetails.getUsername());
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + jwtExpiration);
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)
-                .compact();
+        final Instant now = Instant.now();
+        return JWT.create()
+                .withSubject(userDetails.getUsername())
+                .withIssuer("nik")
+                .withIssuedAt(now)
+                .withExpiresAt(now.plusMillis(duration.toMillis()))
+                .sign(this.auth0JwtAlgorithm);
     }
 
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.niCloudUserService.loadUserByUsername(getUsername(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-    }
-
-    public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+    public String getAuthentication(String token) {
+        if (blackTokens.contains(token)) {
+            return null;
         }
-        return bearerToken;
-    }
-
-    public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-            return !claims.getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new RuntimeException("JWT token is expired or invalid");
+            return auth0JwtJWTVerifier.verify(token).getSubject();
+        } catch (final JWTVerificationException verificationException) {
+            System.out.println("Verification Exception: " + verificationException.getMessage());
+            return null;
         }
-    }
-
-    public String getUsername(String token) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
 
     public void addBlackTokens(String token) {
-        this.blackTokens.add(token);
+        blackTokens.add(token);
     }
 
     public List<String> getBlackTokens() {
-        return this.blackTokens;
+        return blackTokens;
     }
 
 }

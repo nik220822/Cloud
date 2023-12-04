@@ -34,7 +34,7 @@ public class NiCloudUser implements UserDetails {
     private String password;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<File> files;
+    private List<NiCloudFile> niCloudFiles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

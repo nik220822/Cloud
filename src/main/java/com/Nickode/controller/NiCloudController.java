@@ -1,6 +1,6 @@
 package com.Nickode.controller;
 
-import com.Nickode.entity.File;
+import com.Nickode.entity.NiCloudFile;
 import com.Nickode.security.NiCloudJSONwebTokenManager;
 import com.Nickode.security.NiCloudAuthRequest;
 import com.Nickode.security.NiCloudAuthResponse;
@@ -78,7 +78,7 @@ public class NiCloudController {
     @GetMapping("/list")
     public ResponseEntity<List<String>> getFileNames(Authentication authentication) {
         try {
-            return ResponseEntity.ok(niCloudFileService.getFileNames(authentication.getName()));
+            return ResponseEntity.ok(niCloudFileService.getAllFilesNames(authentication.getName()));
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
@@ -113,7 +113,7 @@ public class NiCloudController {
 
     @GetMapping("/file")
     public ResponseEntity<?> downloadFile(@RequestParam("file") String fileName, Authentication authentication) {
-        Optional<File> optionalFile = niCloudFileService.findFile(fileName, authentication.getName());
+        Optional<NiCloudFile> optionalFile = niCloudFileService.findFile(fileName, authentication.getName());
         if (optionalFile.isEmpty()) {
             return ResponseEntity.notFound()
                     .build();

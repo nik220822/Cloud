@@ -1,6 +1,6 @@
 package com.Nickode.service;
 
-import com.Nickode.entity.File;
+import com.Nickode.entity.NiCloudFile;
 import com.Nickode.exception.NotFoundFileExcptn;
 import com.Nickode.repository.NiCloudFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,43 +24,43 @@ public class NiCloudFileService {
         this.niCloudFileRepository = niCloudFileRepository;
     }
 
-    public File create(String fileName, MultipartFile multipartFile, String authenticationGetName) {
-        File file = new File();
+    public NiCloudFile create(String fileName, MultipartFile multipartFile, String authenticationGetName) {
+        NiCloudFile niCloudFile = new NiCloudFile();
         try {
-            file = new File(authenticationGetName, fileName, multipartFile.getContentType(), multipartFile.getSize(), multipartFile.getBytes());
+            niCloudFile = new NiCloudFile(authenticationGetName, fileName, multipartFile.getContentType(), multipartFile.getSize(), multipartFile.getBytes());
         } catch (IOException ioException) {
         }
-        return niCloudFileRepository.save(file);
+        return niCloudFileRepository.save(niCloudFile);
     }
-
+    //TODO
     public void update(String fileName, String newFileName, String authenticationGetName) {
-        Optional<File> optionalFile = niCloudFileRepository.findByFilename(fileName);
+        Optional<NiCloudFile> optionalFile = niCloudFileRepository.findByFilename(fileName);
         optionalFile.get().setFilename(newFileName);
         if (optionalFile.isEmpty()) {
             throw new NotFoundFileExcptn(fileName);
         }
     }
 
+    //TODO
     public void delete(String fileName, String authenticationGetName) {
-//        String id = niCloudFileRepository.findByFileName(fileName).get().getId();
-//        niCloudFileRepository.deleteById(id);
         niCloudFileRepository.deleteByFilename(fileName);
     }
 
+    //TODO
     public void deleteAll(String authenticationGetName) {
         niCloudFileRepository.deleteAll();
     }
-
-    public Optional<File> findFile(String fileName, String authenticationGetName) {
+    //TODO
+    public Optional<NiCloudFile> findFile(String fileName, String authenticationGetName) {
         return niCloudFileRepository.findByFilename(fileName);
     }
-
-    public List<String> getFileNames(String authenticationGetName) {
-        List<File> listOfFiles = niCloudFileRepository.findByFilenameIsNotNull();
+    //TODO
+    public List<String> getAllFilesNames(String authenticationGetName) {
+        List<NiCloudFile> listOfNiCloudFiles = niCloudFileRepository.findByFilenameIsNotNull();
         List<String> listOfFileNames = new ArrayList<>();
-        for (File file : listOfFiles
+        for (NiCloudFile niCloudFile : listOfNiCloudFiles
         ) {
-            listOfFileNames.add(file.getFilename());
+            listOfFileNames.add(niCloudFile.getFilename());
         }
         return listOfFileNames;
     }

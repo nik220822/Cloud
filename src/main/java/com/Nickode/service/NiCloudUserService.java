@@ -44,11 +44,11 @@ public class NiCloudUserService implements UserDetailsService {
         return niCloudUser;
     }
 
-    public NiCloudAuthResponse login(NiCloudAuthRequest authenticationRequest) {
+    public NiCloudAuthResponse login(NiCloudAuthRequest niCloudAuthRequest) {
         try {
-            String username = authenticationRequest.getUsername();
+            String username = niCloudAuthRequest.getUsername();
             authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, authenticationRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(username, niCloudAuthRequest.getPassword()));
             NiCloudUser niCloudUser = (NiCloudUser) loadUserByUsername(username);
 
             if (niCloudUser == null) {
@@ -58,7 +58,7 @@ public class NiCloudUserService implements UserDetailsService {
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Bad credentials");
         }
-        UserDetails niCloudUser = NiCloudUser.builder().username(authenticationRequest.getUsername()).build();
+        UserDetails niCloudUser = NiCloudUser.builder().username(niCloudAuthRequest.getUsername()).build();
         var token = niCloudJSONwebTokenManager.generateToken(niCloudUser);
         return NiCloudAuthResponse.builder()
                 .authToken(token)

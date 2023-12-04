@@ -3,17 +3,17 @@ node_modules
 /dist
 
 
-# local env files
+# local env niCloudFiles
 .env.local
 .env.*.local
 
-# Log files
+# Log niCloudFiles
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Editor directories and files
+# Editor directories and niCloudFiles
 .idea
 .vscode
 *.suo

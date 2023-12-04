@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "files")
-public class File {
+@Table(name = "niCloudFiles")
+public class NiCloudFile {
     @Autowired
-    public File(String authenticationGetName, String fileName, String type, long size, byte[] data) {
+    public NiCloudFile(String authenticationGetName, String fileName, String type, long size, byte[] data) {
     }
 
     @Id

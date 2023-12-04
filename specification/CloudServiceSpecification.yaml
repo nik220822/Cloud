@@ -62,12 +62,12 @@ paths:
           in: query
           schema:
             type: string
-          description: File name to upload
+          description: NiCloudFile name to upload
       requestBody:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/File'
+              $ref: '#/components/schemas/NiCloudFile'
       responses:
         '200':
           description: Success upload
@@ -95,7 +95,7 @@ paths:
           in: query
           schema:
             type: string
-          description: File name to delete
+          description: NiCloudFile name to delete
           required: true
       responses:
         '200':
@@ -130,14 +130,14 @@ paths:
           in: query
           schema:
             type: string
-          description: File name to download
+          description: NiCloudFile name to download
       responses:
         '200':
           description: Success deleted
           content:
             multipart/form-data:
               schema:
-                $ref: '#/components/schemas/File'
+                $ref: '#/components/schemas/NiCloudFile'
         '400':
           description: Error input data
           content:
@@ -168,7 +168,7 @@ paths:
           in: query
           schema:
             type: string
-          description: File name to upload
+          description: NiCloudFile name to upload
       requestBody:
         description: Login and password hash
         required: true
@@ -202,7 +202,7 @@ paths:
                 $ref: '#/components/schemas/Error'                
   /list:
     get:
-      description: Get all files
+      description: Get all niCloudFiles
       parameters:
         - in: header
           name: auth-token
@@ -224,11 +224,11 @@ paths:
                 properties:
                   filename:
                     type: string
-                    description: File name
+                    description: NiCloudFile name
                     required: true
                   size:
                     type: integer
-                    description: File size in bytes
+                    description: NiCloudFile size in bytes
                     required: true
         '400':
           description: Error input data
