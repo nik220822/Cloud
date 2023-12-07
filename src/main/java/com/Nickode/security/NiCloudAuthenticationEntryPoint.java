@@ -11,7 +11,7 @@ import java.io.IOException;
 @Component
 public class NiCloudAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization failed");
+    public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException authException) throws IOException, ServletException {
+        httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorization failed");
     }
 }

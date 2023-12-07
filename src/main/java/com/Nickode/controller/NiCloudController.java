@@ -31,16 +31,16 @@ public class NiCloudController {
     @Autowired
     private final AuthenticationManager authenticationManager;
     @Autowired
-    private final NiCloudUserService niCloudUserService;
-    @Autowired
     private final NiCloudJSONwebTokenManager niCloudJSONwebTokenManager;
+    @Autowired
+    private final NiCloudUserService niCloudUserService;
     @Autowired
     private final NiCloudFileService niCloudFileService;
 
     public NiCloudController(AuthenticationManager authenticationManager, NiCloudUserService niCloudUserService, NiCloudJSONwebTokenManager niCloudJSONwebTokenManager, NiCloudFileService niCloudFileService) {
         this.authenticationManager = authenticationManager;
-        this.niCloudUserService = niCloudUserService;
         this.niCloudJSONwebTokenManager = niCloudJSONwebTokenManager;
+        this.niCloudUserService = niCloudUserService;
         this.niCloudFileService = niCloudFileService;
     }
 
@@ -78,7 +78,7 @@ public class NiCloudController {
     @GetMapping("/list")
     public ResponseEntity<List<String>> getFileNames(Authentication authentication) {
         try {
-            return ResponseEntity.ok(niCloudFileService.getAllFilesNames(authentication.getName()));
+            return ResponseEntity.ok(niCloudFileService.getAllFilesNames());
         } catch (Exception exception) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
@@ -102,7 +102,7 @@ public class NiCloudController {
     @DeleteMapping("/allfiles")
     public ResponseEntity<?> deleteAllFiles(Authentication authentication) {
         try {
-            niCloudFileService.deleteAll(authentication.getName());
+            niCloudFileService.deleteAll();
             return ResponseEntity.status(HttpStatus.OK)
                     .body(String.format("Deleted successfully."));
         } catch (Exception exception) {

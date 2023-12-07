@@ -1,22 +1,16 @@
 package com.Nickode.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Entity
 @Table(name = "niCloudFiles")
 public class NiCloudFile {
-    @Autowired
-    public NiCloudFile(String authenticationGetName, String fileName, String type, long size, byte[] data) {
-    }
-
     @Id
     @GeneratedValue(generator = "NickIDgenerator")
     @GenericGenerator(
@@ -41,5 +35,9 @@ public class NiCloudFile {
     @Lob
     @Column(name = "data", nullable = false, columnDefinition = "BLOB")
     private byte[] data;
+
+    @Autowired
+    public NiCloudFile(String authenticationGetName, String fileName, String type, long size, byte[] data) {
+    }
 
 }

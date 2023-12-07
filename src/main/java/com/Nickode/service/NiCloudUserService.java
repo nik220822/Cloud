@@ -22,7 +22,6 @@ public class NiCloudUserService implements UserDetailsService {
     private final NiCloudJSONwebTokenManager niCloudJSONwebTokenManager;
     @Autowired
     private final AuthenticationManager authenticationManager;
-    @Autowired
     private final HttpServletRequest httpServletRequest;
     @Autowired
     private final NiCloudUserRepository niCloudUserRepository;

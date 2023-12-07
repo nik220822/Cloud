@@ -32,30 +32,23 @@ public class NiCloudFileService {
         }
         return niCloudFileRepository.save(niCloudFile);
     }
-    //TODO
     public void update(String fileName, String newFileName, String authenticationGetName) {
-        Optional<NiCloudFile> optionalFile = niCloudFileRepository.findByFilename(fileName);
+        Optional<NiCloudFile> optionalFile = niCloudFileRepository.findByUserAndFilename(authenticationGetName, fileName);
         optionalFile.get().setFilename(newFileName);
         if (optionalFile.isEmpty()) {
             throw new NotFoundFileExcptn(fileName);
         }
     }
-
-    //TODO
     public void delete(String fileName, String authenticationGetName) {
-        niCloudFileRepository.deleteByFilename(fileName);
+        niCloudFileRepository.deleteByUserAndFilename(authenticationGetName, fileName);
     }
-
-    //TODO
-    public void deleteAll(String authenticationGetName) {
+    public void deleteAll() {
         niCloudFileRepository.deleteAll();
     }
-    //TODO
     public Optional<NiCloudFile> findFile(String fileName, String authenticationGetName) {
-        return niCloudFileRepository.findByFilename(fileName);
+        return niCloudFileRepository.findByUserAndFilename(authenticationGetName, fileName);
     }
-    //TODO
-    public List<String> getAllFilesNames(String authenticationGetName) {
+    public List<String> getAllFilesNames() {
         List<NiCloudFile> listOfNiCloudFiles = niCloudFileRepository.findByFilenameIsNotNull();
         List<String> listOfFileNames = new ArrayList<>();
         for (NiCloudFile niCloudFile : listOfNiCloudFiles
