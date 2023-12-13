@@ -35,6 +35,7 @@ public class NiCloudUserService implements UserDetailsService {
         this.httpServletRequest = httpServletRequest;
         this.niCloudUserRepository = niCloudUserRepository;
     }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         NiCloudUser niCloudUser = niCloudUserRepository.findByUsername(username).orElseThrow(() -> {

@@ -18,8 +18,7 @@ import org.testcontainers.containers.GenericContainer;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class NiCloudIntegrationTests {
-    @Autowired
-    private TestRestTemplate testRestTemplate;
+    private final TestRestTemplate testRestTemplate = new TestRestTemplate();
     private static GenericContainer<?> genericContainer = new GenericContainer<>("NiCloudImage").withExposedPorts(8888);
     private final HttpHeaders httpHeaders = new HttpHeaders();
     private static final ObjectMapper objectMapper = new ObjectMapper();
