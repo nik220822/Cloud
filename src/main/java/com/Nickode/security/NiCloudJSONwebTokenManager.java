@@ -15,13 +15,9 @@ import java.util.List;
 
 @Service
 public class NiCloudJSONwebTokenManager {
-
     private static final List<String> blackTokens = new ArrayList<>();
-
     private static final Duration duration = Duration.ofMinutes(60);
-
     private final Algorithm auth0JwtAlgorithm;
-
     private final JWTVerifier auth0JwtJWTVerifier;
 
     public NiCloudJSONwebTokenManager(@Value("${jwt.secret}") final String jwtSecret) {

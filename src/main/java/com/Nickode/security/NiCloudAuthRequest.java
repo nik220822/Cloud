@@ -1,6 +1,7 @@
 package com.Nickode.security;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -8,9 +9,9 @@ import jakarta.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NiCloudAuthRequest {
-    @NotNull
+    @NotBlank
     @JsonProperty("login")
-    private  String username;
+    private String username;
     @NotNull
-    private  String password;
+    private String password;
 }

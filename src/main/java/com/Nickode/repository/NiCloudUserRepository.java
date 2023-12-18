@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface NiCloudUserRepository extends JpaRepository<NiCloudUser, String> {
     Optional<NiCloudUser> findByUsername(String username);
+
     List<NiCloudUser> findByUsernameIsNotNull();
 }

@@ -22,12 +22,28 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.FileInputStream;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/")
 public class NiCloudController {
+    static Logger niCloudControllerLogger;
+
+    static {
+        try (FileInputStream ins = new FileInputStream("logger.config")) {
+            LogManager.getLogManager().readConfiguration(ins);
+            niCloudControllerLogger = Logger.getLogger(NiCloudController.class.getName());
+        } catch (Exception exception) {
+            niCloudControllerLogger.log(Level.WARNING, "The logger exception was caught: ", exception);
+            exception.printStackTrace();
+        }
+    }
+
     @Autowired
     private final AuthenticationManager authenticationManager;
     @Autowired
@@ -53,22 +69,26 @@ public class NiCloudController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     niCloudAuthRequest.getUsername(), niCloudAuthRequest.getPassword()));
         } catch (BadCredentialsException badCredentialsException) {
+            niCloudControllerLogger.log(Level.WARNING, "An exception was caught: ", badCredentialsException);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
         final UserDetails userDetails = niCloudUserService.loadUserByUsername(niCloudAuthRequest.getUsername());
         final NiCloudAuthResponse niCloudAuthResponse = new NiCloudAuthResponse();
         niCloudAuthResponse.setAuthToken(niCloudJSONwebTokenManager.generateToken(userDetails));
+        niCloudControllerLogger.log(Level.INFO, "The token was successfully generated: you are logged in.");
         return ResponseEntity.ok(niCloudAuthResponse);
     }
 
     @PutMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody HttpServletRequest httpServletRequest) {
         final String header = httpServletRequest.getHeader("auth-token");
+        niCloudControllerLogger.log(Level.INFO, "The token from the request was successfully loaded into the variable");
         if (header.startsWith("Bearer ")) {
             niCloudJSONwebTokenManager.addBlackTokens(header.substring(7));
         } else {
             niCloudJSONwebTokenManager.addBlackTokens(header);
         }
+        niCloudControllerLogger.log(Level.INFO, "The token from the request has been added to the blacklist");
         return ResponseEntity.ok("Success logout");
     }
 
@@ -78,8 +98,10 @@ public class NiCloudController {
     @GetMapping("/list")
     public ResponseEntity<List<String>> getFileNames(Authentication authentication) {
         try {
+            niCloudControllerLogger.log(Level.INFO, "The response is generated with the list of all the files");
             return ResponseEntity.ok(niCloudFileService.getAllFilesNames());
         } catch (Exception exception) {
+            niCloudControllerLogger.log(Level.WARNING, "An exception was caught: ", exception);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -91,9 +113,11 @@ public class NiCloudController {
     public ResponseEntity<?> deleteFile(@RequestParam("filename") String fileName, Authentication authentication) {
         try {
             niCloudFileService.delete(fileName, authentication.getName());
+            niCloudControllerLogger.log(Level.INFO, "niCloudFileService deleted the file successfully");
             return ResponseEntity.status(HttpStatus.OK)
                     .body(String.format("Deleted successfully: %s", fileName));
         } catch (Exception exception) {
+            niCloudControllerLogger.log(Level.WARNING, "An exception was caught: ", exception);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(String.format("Failed to delete: %s", fileName));
         }
@@ -103,9 +127,11 @@ public class NiCloudController {
     public ResponseEntity<?> deleteAllFiles(Authentication authentication) {
         try {
             niCloudFileService.deleteAll();
+            niCloudControllerLogger.log(Level.INFO, "niCloudFileService deleted all the files successfully");
             return ResponseEntity.status(HttpStatus.OK)
                     .body(String.format("Deleted successfully."));
         } catch (Exception exception) {
+            niCloudControllerLogger.log(Level.WARNING, "An exception was caught: ", exception);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(String.format("Failed to delete."));
         }
@@ -115,9 +141,11 @@ public class NiCloudController {
     public ResponseEntity<?> downloadFile(@RequestParam("file") String fileName, Authentication authentication) {
         Optional<NiCloudFile> optionalFile = niCloudFileService.findFile(fileName, authentication.getName());
         if (optionalFile.isEmpty()) {
+            niCloudControllerLogger.log(Level.INFO, "The file wasn't found");
             return ResponseEntity.notFound()
                     .build();
         }
+        niCloudControllerLogger.log(Level.INFO, "The file was found and will be downloaded");
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""
                         + optionalFile.get().getFilename() + "\"")
@@ -130,9 +158,11 @@ public class NiCloudController {
                                           @RequestBody String newFileName, Authentication authentication) {
         try {
             niCloudFileService.update(fileName, newFileName, authentication.getName());
+            niCloudControllerLogger.log(Level.INFO, "The file name was changed successfully");
             return ResponseEntity.status(HttpStatus.OK)
                     .body(String.format("Updated successfully: %s", fileName));
         } catch (Exception exception) {
+            niCloudControllerLogger.log(Level.WARNING, "An exception was caught: ", exception);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(String.format("Failed to update: %s", fileName));
         }
@@ -143,8 +173,10 @@ public class NiCloudController {
                                         @RequestBody MultipartFile multipartFile, Authentication authentication) {
         try {
             niCloudFileService.create(filename, multipartFile, authentication.getName());
+            niCloudControllerLogger.log(Level.INFO, "The file was successfully created in the database");
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception exception) {
+            niCloudControllerLogger.log(Level.WARNING, "An exception was caught: ", exception);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
