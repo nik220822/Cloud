@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,8 +33,8 @@ public class NiCloudUser implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private List<NiCloudFile> niCloudFiles;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<NiCloudFile> niCloudFiles = new ArrayList<>();
 
     @Autowired
     public NiCloudUser(String id, String username, String password, List<NiCloudFile> niCloudFiles) {

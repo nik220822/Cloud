@@ -35,14 +35,13 @@ public class NiCloudJSONwebTokenManager {
                 .sign(this.auth0JwtAlgorithm);
     }
 
-    public String getAuthentication(String token) {
+    public String getAuthentication(final String token) {
         if (blackTokens.contains(token)) {
             return null;
         }
         try {
             return auth0JwtJWTVerifier.verify(token).getSubject();
         } catch (final JWTVerificationException verificationException) {
-            System.out.println("Verification Exception: " + verificationException.getMessage());
             return null;
         }
     }

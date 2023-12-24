@@ -1,8 +1,10 @@
 package com.Nickode.service;
 
 import com.Nickode.entity.NiCloudFile;
-import com.Nickode.exception.NotFoundFileExcptn;
+import com.Nickode.entity.NiCloudUser;
+import com.Nickode.exception.NotFoundFileException;
 import com.Nickode.repository.NiCloudFileRepository;
+import com.Nickode.repository.NiCloudUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,15 +21,19 @@ import java.util.Optional;
 public class NiCloudFileService {
     @Autowired
     private final NiCloudFileRepository niCloudFileRepository;
+    @Autowired
+    private final NiCloudUserRepository niCloudUserRepository;
 
-    public NiCloudFileService(NiCloudFileRepository niCloudFileRepository) {
+    public NiCloudFileService(NiCloudFileRepository niCloudFileRepository, NiCloudUserRepository niCloudUserRepository) {
         this.niCloudFileRepository = niCloudFileRepository;
+        this.niCloudUserRepository = niCloudUserRepository;
     }
 
     public NiCloudFile create(String fileName, MultipartFile multipartFile, String authenticationGetName) {
         NiCloudFile niCloudFile;
+        NiCloudUser niCloudUser = niCloudUserRepository.findByUsername(authenticationGetName).get();
         try {
-            niCloudFile = new NiCloudFile(authenticationGetName, fileName, multipartFile.getContentType(), multipartFile.getSize(), multipartFile.getBytes());
+            niCloudFile = new NiCloudFile(niCloudUser, fileName, multipartFile.getContentType(), multipartFile.getSize(), multipartFile.getBytes());
         } catch (IOException ioException) {
             throw new RuntimeException("file creation failure");
         }
@@ -38,7 +44,7 @@ public class NiCloudFileService {
         Optional<NiCloudFile> optionalFile = niCloudFileRepository.findByUserAndFilename(authenticationGetName, fileName);
         optionalFile.get().setFilename(newFileName);
         if (optionalFile.isEmpty()) {
-            throw new NotFoundFileExcptn(fileName);
+            throw new NotFoundFileException(fileName);
         }
     }
 

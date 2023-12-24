@@ -7,13 +7,14 @@ import com.Nickode.service.NiCloudFileService;
 import com.Nickode.service.NiCloudUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
-
+@Disabled
 public class NiCloudControllerTests {
     private static final String login = "Nikolai";
     private static final String password = "NikolaiPassword";

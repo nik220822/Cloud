@@ -20,7 +20,7 @@ public class NiCloudFile {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user", nullable = true)
+    @JoinColumn(name = "username", nullable = false)
     private NiCloudUser user;
 
     @Column(name = "filename", nullable = false)
@@ -37,7 +37,11 @@ public class NiCloudFile {
     private byte[] data;
 
     @Autowired
-    public NiCloudFile(String authenticationGetName, String fileName, String type, long size, byte[] data) {
+    public NiCloudFile(NiCloudUser niCloudUser, String fileName, String type, long size, byte[] data) {
+        this.user = niCloudUser;
+        this.filename = fileName;
+        this.type = type;
+        this.size = size;
+        this.data = data;
     }
-
 }

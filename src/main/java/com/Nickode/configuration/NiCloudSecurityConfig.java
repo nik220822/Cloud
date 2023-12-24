@@ -18,12 +18,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityBeans {
+public class NiCloudSecurityConfig {
 
     @Autowired
     private NiCloudOncePerRequestFilter niCloudOncePerRequestFilter;
 
-    public SecurityBeans(NiCloudOncePerRequestFilter niCloudOncePerRequestFilter) {
+    public NiCloudSecurityConfig(NiCloudOncePerRequestFilter niCloudOncePerRequestFilter) {
         this.niCloudOncePerRequestFilter = niCloudOncePerRequestFilter;
     }
 
@@ -38,7 +38,7 @@ public class SecurityBeans {
     }
 
     @Bean
-    public SecurityFilterChain securityfilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityfilterChain(final HttpSecurity http) throws Exception {
         http
                 .cors(withDefaults())
                 .csrf((csrf) -> csrf.disable())
