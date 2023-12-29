@@ -2,11 +2,7 @@ version: '1.0'
 services:
   mysqlContainer:
     image: mysql
-#    command: --default-authentication-plugin=mysql_native_password
-#    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: mysql123
-#    MYSQL_USER: ${MYSQL_USER}
-#    MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
      - "3333:3306"

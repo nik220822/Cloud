@@ -30,8 +30,9 @@ public class NiCloudFileService {
     }
 
     public NiCloudFile create(String fileName, MultipartFile multipartFile, String authenticationGetName) {
+        NiCloudUser niCloudUser;
         NiCloudFile niCloudFile;
-        NiCloudUser niCloudUser = niCloudUserRepository.findByUsername(authenticationGetName).get();
+        niCloudUser = niCloudUserRepository.findByUsername(authenticationGetName).orElseThrow();
         try {
             niCloudFile = new NiCloudFile(niCloudUser, fileName, multipartFile.getContentType(), multipartFile.getSize(), multipartFile.getBytes());
         } catch (IOException ioException) {
@@ -41,15 +42,15 @@ public class NiCloudFileService {
     }
 
     public void update(String fileName, String newFileName, String authenticationGetName) {
-        Optional<NiCloudFile> optionalFile = niCloudFileRepository.findByUserAndFilename(authenticationGetName, fileName);
-        optionalFile.get().setFilename(newFileName);
+        Optional<NiCloudFile> optionalFile = niCloudFileRepository.findByUser_usernameAndFilename(authenticationGetName, fileName);
         if (optionalFile.isEmpty()) {
             throw new NotFoundFileException(fileName);
         }
+        optionalFile.get().setFilename(newFileName);
     }
 
     public void delete(String fileName, String authenticationGetName) {
-        niCloudFileRepository.deleteByUserAndFilename(authenticationGetName, fileName);
+        niCloudFileRepository.deleteByUser_usernameAndFilename(authenticationGetName, fileName);
     }
 
     public void deleteAll() {
@@ -57,7 +58,7 @@ public class NiCloudFileService {
     }
 
     public Optional<NiCloudFile> findFile(String fileName, String authenticationGetName) {
-        return niCloudFileRepository.findByUserAndFilename(authenticationGetName, fileName);
+        return niCloudFileRepository.findByUser_usernameAndFilename(authenticationGetName, fileName);
     }
 
     public List<String> getAllFilesNames() {

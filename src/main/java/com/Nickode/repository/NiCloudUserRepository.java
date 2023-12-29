@@ -15,10 +15,10 @@ public class NiCloudUserRepository {
     private EntityManager entityManager;
 
     public Optional<NiCloudUser> findByUsername(String username) {
-        Query query = entityManager.createNativeQuery("SELECT * FROM NiCloudDB.users WHERE users.username = :usernameToFind", NiCloudUser.class);
+        Query query = entityManager.createNativeQuery("SELECT * FROM NiCloudDB.USERS WHERE USERS.username = :usernameToFind", NiCloudUser.class);
         query.setParameter("usernameToFind", username);
-        List<NiCloudUser> users = query.getResultList();
-        NiCloudUser niCloudUser = users.get(0);
+        List users = query.getResultList();
+        NiCloudUser niCloudUser = (NiCloudUser) users.get(0);
         return Optional.of(niCloudUser);
     }
 }

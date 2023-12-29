@@ -15,24 +15,24 @@ import java.util.List;
 
 @Service
 public class NiCloudJSONwebTokenManager {
-    private static final List<String> blackTokens = new ArrayList<>();
     private static final Duration duration = Duration.ofMinutes(60);
-    private final Algorithm auth0JwtAlgorithm;
-    private final JWTVerifier auth0JwtJWTVerifier;
+    private final List<String> blackTokens = new ArrayList<>();
+    private final Algorithm algorithm;
+    private final JWTVerifier verifier;
 
     public NiCloudJSONwebTokenManager(@Value("${jwt.secret}") final String jwtSecret) {
-        this.auth0JwtAlgorithm = Algorithm.HMAC384(jwtSecret);
-        this.auth0JwtJWTVerifier = JWT.require(this.auth0JwtAlgorithm).build();
+        this.algorithm = Algorithm.HMAC384(jwtSecret);
+        this.verifier = JWT.require(this.algorithm).build();
     }
 
     public String generateToken(UserDetails userDetails) {
         final Instant now = Instant.now();
         return JWT.create()
                 .withSubject(userDetails.getUsername())
-                .withIssuer("nik")
+                .withIssuer("nikolaiCloudTokenIssuer")
                 .withIssuedAt(now)
                 .withExpiresAt(now.plusMillis(duration.toMillis()))
-                .sign(this.auth0JwtAlgorithm);
+                .sign(this.algorithm);
     }
 
     public String getAuthentication(final String token) {
@@ -40,7 +40,7 @@ public class NiCloudJSONwebTokenManager {
             return null;
         }
         try {
-            return auth0JwtJWTVerifier.verify(token).getSubject();
+            return verifier.verify(token).getSubject();
         } catch (final JWTVerificationException verificationException) {
             return null;
         }

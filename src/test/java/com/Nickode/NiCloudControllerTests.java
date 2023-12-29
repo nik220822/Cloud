@@ -14,28 +14,29 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
-@Disabled
+
 public class NiCloudControllerTests {
     private static final String login = "Nikolai";
     private static final String password = "NikolaiPassword";
     private static final String secret = "nikolaiSecret";
     private final NiCloudJSONwebTokenManager niCloudJSONwebTokenManager = new NiCloudJSONwebTokenManager(secret);
-    private final NiCloudController niCloudController = new NiCloudController(Mockito.mock(AuthenticationManager.class), Mockito.mock(NiCloudUserService.class), Mockito.mock(NiCloudJSONwebTokenManager.class), Mockito.mock(NiCloudFileService.class));
+    private final NiCloudController niCloudController = new NiCloudController(Mockito.mock(AuthenticationManager.class), Mockito.mock(NiCloudUserService.class), niCloudJSONwebTokenManager, Mockito.mock(NiCloudFileService.class));
     private static final MultipartFile multipartFile = new MockMultipartFile("MultipartFileTestName", "MultipartFileTestOriginalFilename", "byte",
-            new String("Test Multipart NiCloudFile").getBytes());
+            "Test Multipart NiCloudFile".getBytes());
 
     @Test
     public void loginTest() {
         NiCloudAuthRequest niCloudAuthRequest = new NiCloudAuthRequest(login, password);
+        final NiCloudController niCloudController = new NiCloudController(Mockito.mock(AuthenticationManager.class), Mockito.mock(NiCloudUserService.class), Mockito.mock(NiCloudJSONwebTokenManager.class), Mockito.mock(NiCloudFileService.class));
         Assertions.assertDoesNotThrow(() -> niCloudController.login(niCloudAuthRequest));
     }
 
     @Test
     public void logoutTest() {
-        HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(httpServletRequest.getHeader("auth-token")).thenReturn("Bearer test token");
-        niCloudController.logout(httpServletRequest);
-        Assertions.assertTrue(niCloudJSONwebTokenManager.getBlackTokens().contains("test token"));
+        HttpServletRequest httpServletRequestMock = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(httpServletRequestMock.getHeader("auth-token")).thenReturn("Bearer testtoken");
+        niCloudController.logout(httpServletRequestMock);
+        Assertions.assertTrue(niCloudJSONwebTokenManager.getBlackTokens().contains("testtoken"));
     }
 
     @Test

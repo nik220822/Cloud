@@ -30,12 +30,12 @@ public class NiCloudOncePerRequestFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain) throws ServletException, IOException {
         final String requestHeader = request.getHeader("auth-token");
-        final String token = requestHeader.substring(7);
-        final String username = niCloudJSONwebTokenManager.getAuthentication(token);
         if (requestHeader == null || !requestHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
+        final String token = requestHeader.substring(7);
+        final String username = niCloudJSONwebTokenManager.getAuthentication(token);
         if (username == null) {
             filterChain.doFilter(request, response);
             return;

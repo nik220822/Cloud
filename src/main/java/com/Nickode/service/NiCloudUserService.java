@@ -1,6 +1,5 @@
 package com.Nickode.service;
 
-import com.Nickode.entity.NiCloudUser;
 import com.Nickode.repository.NiCloudUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,8 +21,7 @@ public class NiCloudUserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        NiCloudUser niCloudUser = niCloudUserRepository.findByUsername(username).orElseThrow(
+        return niCloudUserRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException("User " + username + " not found"));
-        return niCloudUser;
     }
 }
