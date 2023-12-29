@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @Data
@@ -67,5 +68,9 @@ public class NiCloudUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public int getHash() {
+        return Objects.hash(id,username,password);
     }
 }

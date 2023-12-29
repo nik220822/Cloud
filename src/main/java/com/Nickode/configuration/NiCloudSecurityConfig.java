@@ -39,13 +39,13 @@ public class NiCloudSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityfilterChain(final HttpSecurity http) throws Exception {
+        String theOnlyOneRole = "ROLE_USER";
         http
                 .cors(withDefaults())
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/login", "/logout").permitAll()
-                        .requestMatchers("/file/", "/list/").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/login").permitAll()
+                        .anyRequest().hasAuthority(theOnlyOneRole))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(niCloudOncePerRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

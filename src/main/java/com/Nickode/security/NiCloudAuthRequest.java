@@ -10,7 +10,8 @@ import lombok.*;
 public class NiCloudAuthRequest {
     @NotBlank
     @JsonProperty("login")
-    private String username;
+    private String login;
     @NotBlank
+    @JsonProperty("password")
     private String password;
 }

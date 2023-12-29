@@ -6,6 +6,7 @@ import com.Nickode.security.NiCloudAuthRequest;
 import com.Nickode.security.NiCloudAuthResponse;
 import com.Nickode.service.NiCloudFileService;
 import com.Nickode.service.NiCloudUserService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,19 +65,19 @@ public class NiCloudController {
      * authentication
      */
     @PutMapping("/login")
-    public ResponseEntity<NiCloudAuthResponse> login(@RequestBody @Valid final NiCloudAuthRequest niCloudAuthRequest) {
+    public NiCloudAuthResponse login(@RequestBody @Valid final NiCloudAuthRequest niCloudAuthRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    niCloudAuthRequest.getUsername(), niCloudAuthRequest.getPassword()));
+                    niCloudAuthRequest.getLogin(), niCloudAuthRequest.getPassword()));
         } catch (BadCredentialsException badCredentialsException) {
             niCloudControllerLogger.log(Level.WARNING, "An exception was caught: ", badCredentialsException);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        final UserDetails userDetails = niCloudUserService.loadUserByUsername(niCloudAuthRequest.getUsername());
+        final UserDetails userDetails = niCloudUserService.loadUserByUsername(niCloudAuthRequest.getLogin());
         final NiCloudAuthResponse niCloudAuthResponse = new NiCloudAuthResponse();
         niCloudAuthResponse.setAuthToken(niCloudJSONwebTokenManager.generateToken(userDetails));
         niCloudControllerLogger.log(Level.INFO, "The token was successfully generated: you are logged in.");
-        return ResponseEntity.ok(niCloudAuthResponse);
+        return niCloudAuthResponse;
     }
 
     @PutMapping("/logout")
@@ -96,6 +97,7 @@ public class NiCloudController {
      * getList
      */
     @GetMapping("/list")
+    @RolesAllowed({"USER"})
     public ResponseEntity<List<String>> getFileNames(Authentication authentication) {
         try {
             niCloudControllerLogger.log(Level.INFO, "The response is generated with the list of all the files");
@@ -110,6 +112,7 @@ public class NiCloudController {
      * fileManagement
      */
     @DeleteMapping("/file")
+    @RolesAllowed({"USER"})
     public ResponseEntity<?> deleteFile(@RequestParam("filename") String fileName, Authentication authentication) {
         try {
             niCloudFileService.delete(fileName, authentication.getName());
@@ -124,6 +127,7 @@ public class NiCloudController {
     }
 
     @DeleteMapping("/allfiles")
+    @RolesAllowed({"USER"})
     public ResponseEntity<?> deleteAllFiles(Authentication authentication) {
         try {
             niCloudFileService.deleteAll();
@@ -138,6 +142,7 @@ public class NiCloudController {
     }
 
     @GetMapping("/file")
+    @RolesAllowed({"USER"})
     public ResponseEntity<?> downloadFile(@RequestParam("file") String fileName, Authentication authentication) {
         Optional<NiCloudFile> optionalFile = niCloudFileService.findFile(fileName, authentication.getName());
         if (optionalFile.isEmpty()) {
@@ -154,6 +159,7 @@ public class NiCloudController {
     }
 
     @PutMapping("/file")
+    @RolesAllowed({"USER"})
     public ResponseEntity<?> editFileName(@RequestParam("filename") String fileName,
                                           @RequestBody String newFileName, Authentication authentication) {
         try {
@@ -169,6 +175,7 @@ public class NiCloudController {
     }
 
     @PostMapping("/file")
+    @RolesAllowed({"USER"})
     public ResponseEntity<?> uploadFile(@RequestParam("filename") String filename,
                                         @RequestBody MultipartFile multipartFile, Authentication authentication) {
         try {
