@@ -5,6 +5,7 @@ import com.Nickode.service.NiCloudUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -27,13 +28,13 @@ public class NiCloudSecurityConfig {
     @Autowired
     private NiCloudUserService niCloudUserService;
 
-
     public NiCloudSecurityConfig(NiCloudOncePerRequestFilter niCloudOncePerRequestFilter, NiCloudUserService niCloudUserService) {
         this.niCloudOncePerRequestFilter = niCloudOncePerRequestFilter;
         this.niCloudUserService = niCloudUserService;
     }
 
     @Bean
+    @DependsOn({"passwordEncoder"})
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
@@ -42,12 +43,17 @@ public class NiCloudSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Autowired
+    @DependsOn({"passwordEncoder"})
     public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(niCloudUserService).passwordEncoder(passwordEncoder());
+        authenticationManagerBuilder
+                .userDetailsService(niCloudUserService)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Bean
+    @DependsOn({"passwordEncoder"})
     public SecurityFilterChain securityfilterChain(final HttpSecurity http) throws Exception {
         String theOnlyOneRole = "ROLE_USER";
         http
