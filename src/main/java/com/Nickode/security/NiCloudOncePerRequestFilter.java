@@ -20,7 +20,7 @@ public class NiCloudOncePerRequestFilter extends OncePerRequestFilter {
     @Autowired
     private final NiCloudJSONwebTokenManager niCloudJSONwebTokenManager;
     @Autowired
-    private final NiCloudUserService niCloudUserService;
+    public final NiCloudUserService niCloudUserService;
 
     public NiCloudOncePerRequestFilter(NiCloudJSONwebTokenManager niCloudJSONwebTokenManager, NiCloudUserService niCloudUserService) {
         this.niCloudJSONwebTokenManager = niCloudJSONwebTokenManager;

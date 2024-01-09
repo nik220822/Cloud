@@ -7,7 +7,6 @@ import com.Nickode.service.NiCloudFileService;
 import com.Nickode.service.NiCloudUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
@@ -43,7 +42,7 @@ public class NiCloudControllerTests {
     public void getFileNamesTest() {
         Authentication authenticationMock = Mockito.mock(Authentication.class);
         Mockito.when(authenticationMock.getName()).thenReturn(login);
-        Assertions.assertDoesNotThrow(() -> niCloudController.getFileNames(authenticationMock));
+        Assertions.assertDoesNotThrow(() -> niCloudController.getFileNames());
     }
 
     @Test

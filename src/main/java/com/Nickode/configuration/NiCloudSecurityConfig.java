@@ -24,9 +24,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class NiCloudSecurityConfig {
 
     @Autowired
-    private NiCloudOncePerRequestFilter niCloudOncePerRequestFilter;
+    private final NiCloudOncePerRequestFilter niCloudOncePerRequestFilter;
     @Autowired
-    private NiCloudUserService niCloudUserService;
+    private final NiCloudUserService niCloudUserService;
 
     public NiCloudSecurityConfig(NiCloudOncePerRequestFilter niCloudOncePerRequestFilter, NiCloudUserService niCloudUserService) {
         this.niCloudOncePerRequestFilter = niCloudOncePerRequestFilter;
@@ -34,7 +34,7 @@ public class NiCloudSecurityConfig {
     }
 
     @Bean
-    @DependsOn({"passwordEncoder"})
+//    @DependsOn({"passwordEncoder"})
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
@@ -45,15 +45,16 @@ public class NiCloudSecurityConfig {
     }
 
     @Autowired
-    @DependsOn({"passwordEncoder"})
+//    @DependsOn({"passwordEncoder"})
     public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
+//                .userDetailsService(niCloudOncePerRequestFilter.niCloudUserService)
                 .userDetailsService(niCloudUserService)
                 .passwordEncoder(passwordEncoder());
     }
 
     @Bean
-    @DependsOn({"passwordEncoder"})
+//    @DependsOn({"passwordEncoder"})
     public SecurityFilterChain securityfilterChain(final HttpSecurity http) throws Exception {
         String theOnlyOneRole = "ROLE_USER";
         http

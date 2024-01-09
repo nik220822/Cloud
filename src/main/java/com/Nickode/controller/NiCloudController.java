@@ -97,8 +97,8 @@ public class NiCloudController {
      * getList
      */
     @GetMapping("/list")
-    @RolesAllowed({"USER"})
-    public ResponseEntity<List<String>> getFileNames(Authentication authentication) {
+    @RolesAllowed({"ROLE_USER"})
+    public ResponseEntity<List<String>> getFileNames() {
         try {
             niCloudControllerLogger.log(Level.INFO, "The response is generated with the list of all the files");
             return ResponseEntity.ok(niCloudFileService.getAllFilesNames());
@@ -112,7 +112,7 @@ public class NiCloudController {
      * fileManagement
      */
     @DeleteMapping("/file")
-    @RolesAllowed({"USER"})
+    @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> deleteFile(@RequestParam("filename") String fileName, Authentication authentication) {
         try {
             niCloudFileService.delete(fileName, authentication.getName());
@@ -127,8 +127,8 @@ public class NiCloudController {
     }
 
     @DeleteMapping("/allfiles")
-    @RolesAllowed({"USER"})
-    public ResponseEntity<?> deleteAllFiles(Authentication authentication) {
+    @RolesAllowed({"ROLE_USER"})
+    public ResponseEntity<?> deleteAllFiles() {
         try {
             niCloudFileService.deleteAll();
             niCloudControllerLogger.log(Level.INFO, "niCloudFileService deleted all the files successfully");
@@ -142,7 +142,7 @@ public class NiCloudController {
     }
 
     @GetMapping("/file")
-    @RolesAllowed({"USER"})
+    @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> downloadFile(@RequestParam("file") String fileName, Authentication authentication) {
         Optional<NiCloudFile> optionalFile = niCloudFileService.findFile(fileName, authentication.getName());
         if (optionalFile.isEmpty()) {
@@ -159,7 +159,7 @@ public class NiCloudController {
     }
 
     @PutMapping("/file")
-    @RolesAllowed({"USER"})
+    @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> editFileName(@RequestParam("filename") String fileName,
                                           @RequestBody String newFileName, Authentication authentication) {
         try {
@@ -175,7 +175,7 @@ public class NiCloudController {
     }
 
     @PostMapping("/file")
-    @RolesAllowed({"USER"})
+    @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> uploadFile(@RequestParam("filename") String filename,
                                         @RequestBody MultipartFile multipartFile, Authentication authentication) {
         try {

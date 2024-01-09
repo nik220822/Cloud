@@ -16,12 +16,12 @@ import java.util.List;
 @Service
 public class NiCloudJSONwebTokenManager {
     private static final Duration duration = Duration.ofMinutes(60);
-    private final List<String> blackTokens = new ArrayList<>();
+    private final static List<String> blackTokens = new ArrayList<>();
     private final Algorithm algorithm;
     private final JWTVerifier verifier;
 
     public NiCloudJSONwebTokenManager(@Value("${jwt.secret}") final String jwtSecret) {
-        this.algorithm = Algorithm.HMAC384(jwtSecret);
+        this.algorithm = Algorithm.HMAC256(jwtSecret);
         this.verifier = JWT.require(this.algorithm).build();
     }
 
