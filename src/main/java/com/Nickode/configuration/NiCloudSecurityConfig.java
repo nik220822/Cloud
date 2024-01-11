@@ -44,15 +44,6 @@ public class NiCloudSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
-//    @DependsOn({"passwordEncoder"})
-    public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder
-//                .userDetailsService(niCloudOncePerRequestFilter.niCloudUserService)
-                .userDetailsService(niCloudUserService)
-                .passwordEncoder(passwordEncoder());
-    }
-
     @Bean
 //    @DependsOn({"passwordEncoder"})
     public SecurityFilterChain securityfilterChain(final HttpSecurity http) throws Exception {

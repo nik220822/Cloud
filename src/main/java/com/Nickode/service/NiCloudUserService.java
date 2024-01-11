@@ -31,6 +31,6 @@ public class NiCloudUserService implements UserDetailsService {
                 () -> new UsernameNotFoundException("User " + username + " not found"));
         String theOnlyOneRole = "ROLE_USER";
         final List<SimpleGrantedAuthority> roles = Collections.singletonList(new SimpleGrantedAuthority(theOnlyOneRole));
-        return new NiCloudJwtUserDetails(niCloudUser.getId(), username, Integer.toString(niCloudUser.getHash()), roles);
+        return new NiCloudJwtUserDetails(niCloudUser.getId(), username, niCloudUser.getPassword(), roles);
     }
 }
