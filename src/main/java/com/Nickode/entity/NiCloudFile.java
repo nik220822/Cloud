@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "niCloudFiles")
+@Table(name = "FILES")
 public class NiCloudFile {
     @Id
     @GeneratedValue(generator = "NickIDgenerator")

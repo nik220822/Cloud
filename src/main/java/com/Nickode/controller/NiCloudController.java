@@ -64,7 +64,7 @@ public class NiCloudController {
     /**
      * authentication
      */
-    @PutMapping("/login")
+    @PostMapping("/login")
     public NiCloudAuthResponse login(@RequestBody @Valid final NiCloudAuthRequest niCloudAuthRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -80,7 +80,7 @@ public class NiCloudController {
         return niCloudAuthResponse;
     }
 
-    @PutMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody HttpServletRequest httpServletRequest) {
         final String header = httpServletRequest.getHeader("auth-token");
         niCloudControllerLogger.log(Level.INFO, "The token from the request was successfully loaded into the variable");
@@ -161,7 +161,7 @@ public class NiCloudController {
     @PutMapping("/file")
     @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> editFileName(@RequestParam("filename") String fileName,
-                                          @RequestBody String newFileName, Authentication authentication) {
+                                          @RequestParam("newFileName") String newFileName, Authentication authentication) {
         try {
             niCloudFileService.update(fileName, newFileName, authentication.getName());
             niCloudControllerLogger.log(Level.INFO, "The file name was changed successfully");
@@ -177,7 +177,7 @@ public class NiCloudController {
     @PostMapping("/file")
     @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> uploadFile(@RequestParam("filename") String filename,
-                                        @RequestBody MultipartFile multipartFile, Authentication authentication) {
+                                        @RequestParam("multipartFile") MultipartFile multipartFile, Authentication authentication) {
         try {
             niCloudFileService.create(filename, multipartFile, authentication.getName());
             niCloudControllerLogger.log(Level.INFO, "The file was successfully created in the database");
