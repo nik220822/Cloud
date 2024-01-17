@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "FILES")
+@Table(name = "files")
 public class NiCloudFile {
     @Id
     @GeneratedValue(generator = "NickIDgenerator")
@@ -20,7 +20,7 @@ public class NiCloudFile {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "username", nullable = false)
+    @JoinColumn(name = "user", nullable = false)
     private NiCloudUser user;
 
     @Column(name = "filename", nullable = false)

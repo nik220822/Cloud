@@ -1,2 +1,2 @@
-insert into FILES (id, user, filename, size, type, data)
+insert into files (id, user, filename, size, type, data)
 values
