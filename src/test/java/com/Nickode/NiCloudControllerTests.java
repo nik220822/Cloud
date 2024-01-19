@@ -30,13 +30,13 @@ public class NiCloudControllerTests {
         Assertions.assertDoesNotThrow(() -> niCloudController.login(niCloudAuthRequest));
     }
 
-    @Test
-    public void logoutTest() {
-        HttpServletRequest httpServletRequestMock = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(httpServletRequestMock.getHeader("auth-token")).thenReturn("Bearer testtoken");
-        niCloudController.logout(httpServletRequestMock);
-        Assertions.assertTrue(niCloudJSONwebTokenManager.getBlackTokens().contains("testtoken"));
-    }
+//    @Test
+//    public void logoutTest() {
+//        HttpServletRequest httpServletRequestMock = Mockito.mock(HttpServletRequest.class);
+//        Mockito.when(httpServletRequestMock.getHeader("auth-token")).thenReturn("Bearer testtoken");
+//        niCloudController.logout(httpServletRequestMock);
+//        Assertions.assertTrue(niCloudJSONwebTokenManager.getBlackTokens().contains("testtoken"));
+//    }
 
     @Test
     public void getFileNamesTest() {

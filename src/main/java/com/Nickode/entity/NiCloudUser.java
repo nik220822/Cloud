@@ -18,7 +18,7 @@ import java.util.Objects;
 @Data
 @Builder
 @Entity
-@Table(name = "USERS")
+@Table(name = "users")
 public class NiCloudUser implements UserDetails {
     @Id
     @GeneratedValue(generator = "NickIDgenerator")

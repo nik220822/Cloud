@@ -81,9 +81,9 @@ public class NiCloudController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody HttpServletRequest httpServletRequest) {
-        final String header = httpServletRequest.getHeader("auth-token");
-        niCloudControllerLogger.log(Level.INFO, "The token from the request was successfully loaded into the variable");
+    public ResponseEntity<String> logout(@RequestHeader("auth-token") String header) {
+//        final String header = httpServletRequest.getHeader("auth-token");
+//        niCloudControllerLogger.log(Level.INFO, "The token from the request was successfully loaded into the variable");
         if (header.startsWith("Bearer ")) {
             niCloudJSONwebTokenManager.addBlackTokens(header.substring(7));
         } else {
@@ -143,8 +143,8 @@ public class NiCloudController {
 
     @GetMapping("/file")
     @RolesAllowed({"ROLE_USER"})
-    public ResponseEntity<?> downloadFile(@RequestParam("file") String fileName, Authentication authentication) {
-        Optional<NiCloudFile> optionalFile = niCloudFileService.findFile(fileName, authentication.getName());
+    public ResponseEntity<?> downloadFile(@RequestParam("filename") String filename, Authentication authentication) {
+        Optional<NiCloudFile> optionalFile = niCloudFileService.findFile(filename, authentication.getName());
         if (optionalFile.isEmpty()) {
             niCloudControllerLogger.log(Level.INFO, "The file wasn't found");
             return ResponseEntity.notFound()
@@ -160,17 +160,17 @@ public class NiCloudController {
 
     @PutMapping("/file")
     @RolesAllowed({"ROLE_USER"})
-    public ResponseEntity<?> editFileName(@RequestParam("filename") String fileName,
-                                          @RequestParam("newFileName") String newFileName, Authentication authentication) {
+    public ResponseEntity<?> editFileName(@RequestParam("filename") String filename,
+                                          @RequestParam("newfilename") String newfilename, Authentication authentication) {
         try {
-            niCloudFileService.update(fileName, newFileName, authentication.getName());
+            niCloudFileService.update(filename, newfilename, authentication.getName());
             niCloudControllerLogger.log(Level.INFO, "The file name was changed successfully");
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(String.format("Updated successfully: %s", fileName));
+                    .body(String.format("Updated successfully: %s", filename));
         } catch (Exception exception) {
             niCloudControllerLogger.log(Level.WARNING, "An exception was caught: ", exception);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(String.format("Failed to update: %s", fileName));
+                    .body(String.format("Failed to update: %s", filename));
         }
     }
 
