@@ -7,7 +7,6 @@ import com.Nickode.security.NiCloudAuthResponse;
 import com.Nickode.service.NiCloudFileService;
 import com.Nickode.service.NiCloudUserService;
 import jakarta.annotation.security.RolesAllowed;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -75,7 +74,9 @@ public class NiCloudController {
         }
         final UserDetails userDetails = niCloudUserService.loadUserByUsername(niCloudAuthRequest.getLogin());
         final NiCloudAuthResponse niCloudAuthResponse = new NiCloudAuthResponse();
-        niCloudAuthResponse.setAuthToken(niCloudJSONwebTokenManager.generateToken(userDetails));
+        String token = niCloudJSONwebTokenManager.generateToken(userDetails);
+        niCloudAuthResponse.setAuthToken(token);
+        niCloudUserService.putTokenAndUsername(token, niCloudAuthRequest.getLogin());
         niCloudControllerLogger.log(Level.INFO, "The token was successfully generated: you are logged in.");
         return niCloudAuthResponse;
     }
@@ -113,9 +114,16 @@ public class NiCloudController {
      */
     @DeleteMapping("/file")
     @RolesAllowed({"ROLE_USER"})
-    public ResponseEntity<?> deleteFile(@RequestParam("filename") String fileName, Authentication authentication) {
+    public ResponseEntity<?> deleteFile(@RequestHeader("auth-token") String header, @RequestParam("filename") String fileName) {
         try {
-            niCloudFileService.delete(fileName, authentication.getName());
+            String token;
+            if (header.startsWith("Bearer ")) {
+                token = header.substring(7);
+            } else {
+                token = header;
+            }
+            String username = niCloudUserService.getUserName(token);
+            niCloudFileService.delete(fileName, username);
             niCloudControllerLogger.log(Level.INFO, "niCloudFileService deleted the file successfully");
             return ResponseEntity.status(HttpStatus.OK)
                     .body(String.format("Deleted successfully: %s", fileName));

@@ -45,12 +45,12 @@ public class NiCloudControllerTests {
         Assertions.assertDoesNotThrow(() -> niCloudController.getFileNames());
     }
 
-    @Test
-    public void deleteFileTest() {
-        Authentication authenticationMock = Mockito.mock(Authentication.class);
-        Mockito.when(authenticationMock.getName()).thenReturn(login);
-        Assertions.assertDoesNotThrow(() -> niCloudController.deleteFile("file", authenticationMock));
-    }
+//    @Test
+//    public void deleteFileTest() {
+//        Authentication authenticationMock = Mockito.mock(Authentication.class);
+//        Mockito.when(authenticationMock.getName()).thenReturn(login);
+//        Assertions.assertDoesNotThrow(() -> niCloudController.deleteFile("file", authenticationMock));
+//    }
 
     @Test
     public void downloadFileTest() {

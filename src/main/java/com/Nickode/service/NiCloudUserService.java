@@ -33,4 +33,12 @@ public class NiCloudUserService implements UserDetailsService {
         final List<SimpleGrantedAuthority> roles = Collections.singletonList(new SimpleGrantedAuthority(theOnlyOneRole));
         return new NiCloudJwtUserDetails(niCloudUser.getId(), username, niCloudUser.getPassword(), roles);
     }
+
+    public String getUserName(String token) {
+        return niCloudUserRepository.getUserName(token);
+    }
+
+    public void putTokenAndUsername(String token, String userName) {
+        niCloudUserRepository.putTokenAndUsername(token, userName);
+    }
 }
