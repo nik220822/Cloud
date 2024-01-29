@@ -75,4 +75,16 @@ public class NiCloudServicesTests {
         Mockito.when(niCloudUserRepositoryMock.findByUsername(authenticationGetName)).thenReturn(Optional.of(niCloudUser));
         Assertions.assertDoesNotThrow(() -> niCloudUserService.loadUserByUsername(authenticationGetName));
     }
+
+    @Test
+    public void getUserNameFromHeaderOne() {
+        Mockito.when(niCloudUserRepositoryMock.getUserName("NikolaiToken")).thenReturn("Nikolai");
+        Assertions.assertEquals(niCloudUserService.getUserNameFromHeader("Bearer NikolaiToken"), "Nikolai");
+    }
+
+    @Test
+    public void getUserNameFromHeaderTwo() {
+        Mockito.when(niCloudUserRepositoryMock.getUserName("NikolaiToken")).thenReturn("Nikolai");
+        Assertions.assertEquals(niCloudUserService.getUserNameFromHeader("NikolaiToken"), "Nikolai");
+    }
 }

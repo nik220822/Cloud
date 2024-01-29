@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -116,13 +115,7 @@ public class NiCloudController {
     @RolesAllowed({"ROLE_USER"})
     public ResponseEntity<?> deleteFile(@RequestHeader("auth-token") String header, @RequestParam("filename") String fileName) {
         try {
-            String token;
-            if (header.startsWith("Bearer ")) {
-                token = header.substring(7);
-            } else {
-                token = header;
-            }
-            String username = niCloudUserService.getUserName(token);
+            String username = niCloudUserService.getUserNameFromHeader(header);
             niCloudFileService.delete(fileName, username);
             niCloudControllerLogger.log(Level.INFO, "niCloudFileService deleted the file successfully");
             return ResponseEntity.status(HttpStatus.OK)
@@ -151,8 +144,8 @@ public class NiCloudController {
 
     @GetMapping("/file")
     @RolesAllowed({"ROLE_USER"})
-    public ResponseEntity<?> downloadFile(@RequestParam("filename") String filename, Authentication authentication) {
-        Optional<NiCloudFile> optionalFile = niCloudFileService.findFile(filename, authentication.getName());
+    public ResponseEntity<?> downloadFile(@RequestHeader("auth-token") String header, @RequestParam("filename") String filename) {
+        Optional<NiCloudFile> optionalFile = niCloudFileService.findFile(filename, niCloudUserService.getUserNameFromHeader(header));
         if (optionalFile.isEmpty()) {
             niCloudControllerLogger.log(Level.INFO, "The file wasn't found");
             return ResponseEntity.notFound()
@@ -168,10 +161,10 @@ public class NiCloudController {
 
     @PutMapping("/file")
     @RolesAllowed({"ROLE_USER"})
-    public ResponseEntity<?> editFileName(@RequestParam("filename") String filename,
-                                          @RequestParam("newfilename") String newfilename, Authentication authentication) {
+    public ResponseEntity<?> editFileName(@RequestHeader("auth-token") String header, @RequestParam("filename") String filename,
+                                          @RequestParam("newfilename") String newfilename) {
         try {
-            niCloudFileService.update(filename, newfilename, authentication.getName());
+            niCloudFileService.update(filename, newfilename, niCloudUserService.getUserNameFromHeader(header));
             niCloudControllerLogger.log(Level.INFO, "The file name was changed successfully");
             return ResponseEntity.status(HttpStatus.OK)
                     .body(String.format("Updated successfully: %s", filename));
@@ -184,10 +177,10 @@ public class NiCloudController {
 
     @PostMapping("/file")
     @RolesAllowed({"ROLE_USER"})
-    public ResponseEntity<?> uploadFile(@RequestParam("filename") String filename,
-                                        @RequestParam("multipartFile") MultipartFile multipartFile, Authentication authentication) {
+    public ResponseEntity<?> uploadFile(@RequestHeader("auth-token") String header, @RequestParam("filename") String filename,
+                                        @RequestParam("multipartFile") MultipartFile multipartFile) {
         try {
-            niCloudFileService.create(filename, multipartFile, authentication.getName());
+            niCloudFileService.create(filename, multipartFile, niCloudUserService.getUserNameFromHeader(header));
             niCloudControllerLogger.log(Level.INFO, "The file was successfully created in the database");
             return ResponseEntity.ok(HttpStatus.OK);
         } catch (Exception exception) {

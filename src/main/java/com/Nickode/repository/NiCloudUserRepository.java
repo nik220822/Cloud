@@ -29,10 +29,6 @@ public class NiCloudUserRepository {
         tokensAndUsernames.put(token, username);
     }
 
-    public void removeTokenAndUsername(String token) {
-        tokensAndUsernames.remove(token);
-    }
-
     public String getUserName(String token) {
         return tokensAndUsernames.get(token);
     }

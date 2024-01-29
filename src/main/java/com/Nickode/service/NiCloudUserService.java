@@ -34,11 +34,17 @@ public class NiCloudUserService implements UserDetailsService {
         return new NiCloudJwtUserDetails(niCloudUser.getId(), username, niCloudUser.getPassword(), roles);
     }
 
-    public String getUserName(String token) {
-        return niCloudUserRepository.getUserName(token);
-    }
-
     public void putTokenAndUsername(String token, String userName) {
         niCloudUserRepository.putTokenAndUsername(token, userName);
+    }
+
+    public String getUserNameFromHeader(String header) {
+        String token;
+        if (header.startsWith("Bearer ")) {
+            token = header.substring(7);
+        } else {
+            token = header;
+        }
+        return niCloudUserRepository.getUserName(token);
     }
 }
